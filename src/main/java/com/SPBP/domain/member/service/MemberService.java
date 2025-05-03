@@ -6,7 +6,7 @@ import com.SPBP.domain.member.dto.MemberDto;
 import java.util.List;
 
 public interface MemberService {
-    int registerMember(MemberDto member);
+    void registerMember(MemberDto member);
     MemberDto findMember(MemberDto member);
     int updateMember(MemberDto member);
     int deleteMemberByEmail(String userEmail);

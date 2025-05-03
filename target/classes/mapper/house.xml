@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ((33.44843745687413, 126.56798357402302), (33.452964008206735, 126.57333898904454)) -->
+<mapper namespace="com.SPBP.domain.house.mapper.HouseMapper">
+
+	<resultMap type="com.SPBP.domain.house.dto.HouseDealDto" id="resultHouseDealDto">
+	    <id column="no" property="no"/>
+	    <result column="apt_seq" property="aptSeq"/>
+	    <result column="apt_nm" property="aptNm"/>
+	    <result column="umd_nm" property="umdNm"/>
+	    <result column="floor" property="floor"/>
+	    <result column="sgg_cd" property="sggCd"/>
+	    <result column="umd_cd" property="umdCd"/>
+	    <result column="jibun" property="jibun"/>
+	    <result column="road_nm_sgg_cd" property="roadNmSggCd"/>
+	    <result column="road_nm" property="roadNm"/>
+	    <result column="road_nm_bonbun" property="roadNmBonbun"/>
+	    <result column="road_nm_bubun" property="roadNmBubun"/>
+	    <result column="deal_year" property="dealYear"/>
+	    <result column="deal_month" property="dealMonth"/>
+	    <result column="deal_day" property="dealDay"/>
+	    <result column="exclu_use_ar" property="excluUseAr"/>
+	    <result column="deal_amount" property="dealAmount"/>
+	    <result column="footage" property="footage"/>
+	</resultMap>
+
+	<select id="getHouseDealsInBounds" parameterType="map" resultMap="resultHouseDealDto">
+		WITH RankedDeals AS (
+            SELECT
+                deal.no,
+                deal.apt_seq,
+                info.apt_nm,
+                info.umd_nm,
+                deal.floor,
+                info.sgg_cd,
+                info.umd_cd,
+                info.jibun,
+                info.road_nm_sgg_cd,
+                info.road_nm,
+                info.road_nm_bonbun,
+                info.road_nm_bubun,
+                deal.deal_year,
+                deal.deal_month,
+                deal.deal_day,
+                deal.exclu_use_ar,
+                ROUND(REPLACE(deal.deal_amount, ',', '') / 10000, 2) as deal_amount,
+                ROUND((deal.exclu_use_ar * 0.3025), 1) as footage,
+                ROW_NUMBER() OVER (
+                    PARTITION BY deal.apt_seq
+                    ORDER BY deal.deal_year DESC, deal.deal_month DESC, deal.deal_day DESC
+                ) AS rn
+            FROM houseinfos info
+            JOIN housedeals deal ON info.apt_seq = deal.apt_seq
+            WHERE info.latitude BETWEEN #{swLat} AND #{neLat}
+              AND info.longitude BETWEEN #{swLng} AND #{neLng}
+        )
+        SELECT * FROM RankedDeals
+        WHERE rn = 1
+        ORDER BY deal_amount ASC
+	</select>
+	
+	<select id="selectedHouseDeals" parameterType="java.lang.String" resultMap="resultHouseDealDto">
+		SELECT
+		    deal.no,
+		    deal.apt_seq,
+		    info.apt_nm,
+		    info.umd_nm,
+		    deal.floor,
+		    info.sgg_cd,
+		    info.umd_cd,
+		    info.jibun,
+		    info.road_nm_sgg_cd,
+		    info.road_nm,
+		    info.road_nm_bonbun,
+		    info.road_nm_bubun,
+		    deal.deal_year,
+		    deal.deal_month,
+		    deal.deal_day,
+		    deal.exclu_use_ar,
+		    ROUND(REPLACE(deal.deal_amount, ',', '') / 10000, 2) as deal_amount,
+		    ROUND((deal.exclu_use_ar * 0.3025), 1) as footage
+		FROM houseinfos info
+		JOIN housedeals deal ON info.apt_seq = deal.apt_seq
+		WHERE info.apt_seq = TRIM(#{aptSeq})
+		ORDER BY deal.deal_year DESC, deal.deal_month DESC, deal.deal_day DESC
+	</select>
+</mapper>

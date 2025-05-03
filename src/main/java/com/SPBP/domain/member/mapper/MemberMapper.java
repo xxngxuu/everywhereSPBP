@@ -14,4 +14,9 @@ public interface MemberMapper {
     int addInterestItem(String email,String aptSeq,String aptNm);
     List<HouseInfoDto> listInterestItems(String email);
     int removeInterestItem(String email, String aptSeq, String aptNm);
+
+    // 사전 처리를 위한 메서드
+    int findByEmail(String email);
+    int findByPhoneNumber(String phoneNumber);
+
 }
