@@ -11,7 +11,7 @@ import java.util.List;
 public interface HouseMapper {
 
     int registerHouseDeal(HouseDealDto houseDealDto);
-    List<HouseDealDto> findHouseDeals(String aptSeq);
+    List<HouseDealDto> selectedHouseDeals(String aptSeq);
     List<HouseDealDto> getHouseDealsInBounds(double swLat, double neLat, double swLng, double neLng);
     int updateHouseDeal(HouseDealDto houseDealDto);
     int deleteHouseDealByNo(int no);

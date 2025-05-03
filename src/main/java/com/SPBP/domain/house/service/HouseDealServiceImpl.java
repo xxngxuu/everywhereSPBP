@@ -18,8 +18,8 @@ public class HouseDealServiceImpl implements HouseDealService {
     }
 
     @Override
-    public List<HouseDealDto> findHouseDeals(String aptSeq) {
-        return houseMapper.findHouseDeals(aptSeq);
+    public List<HouseDealDto> selectedHouseDeals(String aptSeq) {
+        return houseMapper.selectedHouseDeals(aptSeq);
     }
 
     @Override
